@@ -5,7 +5,18 @@ from unittest.mock import Mock
 import can
 import pytest
 
-from agile_nero.transport import NativeGsUsbBus, select_device
+from agile_nero.robot.diagnostics.transport import NativeGsUsbBus, select_device
+
+
+def test_legacy_diagnostic_modules_preserve_patch_targets():
+    import agile_nero.cli as old_cli
+    import agile_nero.state as old_state
+    import agile_nero.transport as old_transport
+    from agile_nero.robot.diagnostics import cli, state, transport
+
+    assert old_cli is cli
+    assert old_state is state
+    assert old_transport is transport
 
 
 def test_firmware_query_is_the_only_write_allowed():
@@ -47,7 +58,7 @@ def test_control_and_malformed_frames_are_blocked(message):
 
 def test_multiple_adapters_require_explicit_selection(monkeypatch):
     adapters = [Mock(serial_number="first"), Mock(serial_number="second")]
-    monkeypatch.setattr("agile_nero.transport.devices", lambda: adapters)
+    monkeypatch.setattr("agile_nero.robot.diagnostics.transport.devices", lambda: adapters)
     with pytest.raises(can.CanInitializationError):
         select_device("auto")
     assert select_device("second") is adapters[1]
@@ -66,9 +77,11 @@ def test_open_and_close_preserve_can_ack_peer(monkeypatch):
     device.set_bitrate.return_value = True
     claim = Mock()
     dispose = Mock()
-    monkeypatch.setattr("agile_nero.transport.select_device", lambda _: device)
-    monkeypatch.setattr("agile_nero.transport.usb.util.claim_interface", claim)
-    monkeypatch.setattr("agile_nero.transport.usb.util.dispose_resources", dispose)
+    monkeypatch.setattr("agile_nero.robot.diagnostics.transport.select_device", lambda _: device)
+    monkeypatch.setattr("agile_nero.robot.diagnostics.transport.usb.util.claim_interface", claim)
+    monkeypatch.setattr(
+        "agile_nero.robot.diagnostics.transport.usb.util.dispose_resources", dispose
+    )
     bus = NativeGsUsbBus(channel="test")
     claim.assert_called_once_with(device.gs_usb, 0)
     assert device.gs_usb.clear_halt.call_args_list[0].args == (0x81,)

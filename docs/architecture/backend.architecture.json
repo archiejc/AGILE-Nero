@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "AGILE-Nero · 后端目标架构",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1390,
+      700
+    ]
+  },
+  "components": [
+    {
+      "id": "ingest",
+      "type": "backend",
+      "label": "上传与任务 API",
+      "sublabel": "规划 · 图片 / CAD 与任务参数",
+      "tag": "规划",
+      "pos": [
+        50.0,
+        160
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "vision",
+      "type": "backend",
+      "label": "图像识别与线条提取",
+      "sublabel": "规划 · 模型识别 / 中心线 / 矢量化",
+      "tag": "规划",
+      "pos": [
+        390.0,
+        90
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "cad",
+      "type": "backend",
+      "label": "CAD 几何解析",
+      "sublabel": "规划 · 图层 / 曲线 / 单位 / 视图",
+      "tag": "规划",
+      "pos": [
+        390.0,
+        300
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "strokes",
+      "type": "backend",
+      "label": "统一线稿与几何确认",
+      "sublabel": "数据契约已有 · 编辑与确认待建",
+      "tag": "部分实现",
+      "pos": [
+        730.0,
+        160
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "planar",
+      "type": "backend",
+      "label": "笔画与平面路径规划",
+      "sublabel": "已有采样与抬落笔 · 排序待扩展",
+      "tag": "基础已实现",
+      "pos": [
+        1070.0,
+        160
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "robotplan",
+      "type": "backend",
+      "label": "机器人轨迹规划",
+      "sublabel": "待建 · 标定 / TCP / IK / 时间参数化",
+      "tag": "规划",
+      "pos": [
+        1070.0,
+        510
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "simulation",
+      "type": "backend",
+      "label": "MuJoCo 仿真与验证",
+      "sublabel": "接口预留 · 机器人仿真待建",
+      "tag": "接口已预留",
+      "pos": [
+        730.0,
+        510
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "release",
+      "type": "security",
+      "label": "验证门与执行授权",
+      "sublabel": "规划 · 轨迹版本绑定与人工确认",
+      "tag": "规划",
+      "pos": [
+        390.0,
+        510
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "executor",
+      "type": "backend",
+      "label": "设备执行适配器",
+      "sublabel": "未适配 / 禁用 · SDK 与停止处理",
+      "tag": "未适配 / 禁用",
+      "pos": [
+        50.0,
+        510
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "drawing",
+      "type": "external",
+      "label": "机械臂与线稿结果",
+      "sublabel": "目标 · 执行反馈与后续图像评估",
+      "tag": "目标结果",
+      "pos": [
+        50.0,
+        335
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "orchestrator",
+      "type": "messagebus",
+      "label": "任务编排与重试",
+      "sublabel": "固定离线流程已有 · Agent 待接入",
+      "tag": "固定离线流程已有",
+      "pos": [
+        730.0,
+        20
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "artifacts",
+      "type": "database",
+      "label": "任务与产物存储",
+      "sublabel": "本地 JSON 已有 · 任务存储待扩展",
+      "tag": "本地 JSON 已有",
+      "pos": [
+        1070.0,
+        20
+      ],
+      "size": [
+        220,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "image-input",
+      "from": "ingest",
+      "to": "vision",
+      "label": "图片"
+    },
+    {
+      "id": "cad-input",
+      "from": "ingest",
+      "to": "cad",
+      "label": "CAD"
+    },
+    {
+      "id": "image-strokes",
+      "from": "vision",
+      "to": "strokes",
+      "label": "候选线条"
+    },
+    {
+      "id": "cad-strokes",
+      "from": "cad",
+      "to": "strokes",
+      "label": "矢量曲线"
+    },
+    {
+      "id": "confirmed-strokes",
+      "from": "strokes",
+      "to": "planar",
+      "label": "确认的笔画",
+      "variant": "emphasis"
+    },
+    {
+      "id": "plane-to-robot",
+      "from": "planar",
+      "to": "robotplan",
+      "label": "平面路径",
+      "variant": "emphasis",
+      "labelDy": 150
+    },
+    {
+      "id": "robot-to-sim",
+      "from": "robotplan",
+      "to": "simulation",
+      "label": "关节轨迹"
+    },
+    {
+      "id": "sim-to-gate",
+      "from": "simulation",
+      "to": "release",
+      "label": "验证报告"
+    },
+    {
+      "id": "gate-to-device",
+      "from": "release",
+      "to": "executor",
+      "label": "授权轨迹",
+      "variant": "security"
+    },
+    {
+      "id": "device-to-result",
+      "from": "executor",
+      "to": "drawing",
+      "label": "线稿执行"
+    },
+    {
+      "id": "orchestrated-tools",
+      "from": "orchestrator",
+      "to": "strokes",
+      "label": "工具调度",
+      "variant": "dashed",
+      "labelDy": 24
+    },
+    {
+      "id": "persist-artifacts",
+      "from": "planar",
+      "to": "artifacts",
+      "label": "版本化产物",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "输入边界",
+      "items": [
+        "图片走识别；CAD 优先解析原生几何。",
+        "统一输出毫米笔画，人工可校正识别与尺度。"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "规划边界",
+      "items": [
+        "平面 Toolpath 与可执行关节轨迹分开。",
+        "现有实现到几何预演；仿真与标定待接入。"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "执行边界",
+      "items": [
+        "模型与编排只调用工具，不直接驱动电机。",
+        "硬件入口禁用；轨迹变更后重新验证与授权。"
+      ]
+    }
+  ]
+}

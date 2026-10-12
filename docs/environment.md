@@ -1,5 +1,7 @@
 # Mac Studio 环境部署
 
+设备诊断源码位于 [robot/diagnostics](../src/agile_nero/robot/diagnostics/README.md)，离线绘画入口位于 [api](../src/agile_nero/api/README.md)。快速定位其他模块见 [模块导航](modules.md)。
+
 本项目使用 Python 3.12 的独立 `.venv`，由 `uv.lock` 锁定依赖。Mac 负责图像处理、笔画几何、仿真、模型实验与工作流；当前设备工具用于接收 CAN 数据和读取固件。
 
 ## 安装与日常使用
@@ -16,7 +18,7 @@ nero listen --seconds 5
 nero read-state --seconds 5
 ```
 
-`setup.command` 安装核心、workflow、ml 依赖并执行环境检查。`check-environment.command` 只运行软件检查。`read-status.command` 按 `configs/local/robot.toml` 读取实机状态。机器配置和检查输出均由 Git 忽略。
+`setup.command` 安装核心、workflow、ml 依赖并执行环境检查。`check-environment.command` 执行软件检查并枚举 USB 适配器。`read-status.command` 按 `configs/local/robot.toml` 读取实机状态。机器配置和检查输出均由 Git 忽略。
 
 如果固件查询没有响应，而网页上位机已给出实际版本，可显式提供版本，例如 `nero read-state --firmware 1.20`。这个参数来自操作者记录，输出会标明 `firmware_source=user-supplied`，与设备查询结果分开记录。不要猜测实际版本。
 
