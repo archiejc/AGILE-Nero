@@ -3,6 +3,7 @@
 ._*
 .idea/
 .vscode/
+.local/
 
 # Python environments and caches
 .venv/

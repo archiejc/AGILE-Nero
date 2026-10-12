@@ -1,0 +1,7 @@
+# Use a serial number from `nero devices` to bind a specific adapter.
+robot = "nero"
+interface = "nero_gs_usb"
+adapter_serial = "auto"
+bitrate = 1000000
+# read-state queries firmware and selects its SDK profile automatically.
+# This diagnostics backend rejects motor/mode/parameter configuration commands.
