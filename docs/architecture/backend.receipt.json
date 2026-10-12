@@ -1,0 +1,46 @@
+{
+  "diagram_type": "architecture",
+  "output": "/Users/jiachenboo/.codex/worktrees/offline-drawing-pipeline/AGILE-Nero/docs/architecture/backend.html",
+  "specification_sha256": "16f25fe54999ca9fd7739956fce5da0c4b3773b7aa473e81ecabc1a2bb347191",
+  "artifact_sha256": "97775e5fc6250eaef0cd954ae64e599520a4e5e28a70b9bb1f4d9edd89569a5d",
+  "specification_bytes": 6138,
+  "artifact_bytes": 818209,
+  "validation": "9/9 showcase, 0 errors, 0 warnings",
+  "browser_evidence": "passed",
+  "visual_review": "passed",
+  "correction_rounds": 1,
+  "visual_review_scope": "Image review of READ/Still at 1440x900 and 2048x1320 in light and dark themes; labels, paths, status visibility, node/card fit and vertical balance checked. Interactive controls and exports were not exercised.",
+  "browser_viewports": [
+    "1440x900",
+    "1600x1000",
+    "1920x1080",
+    "2048x1320"
+  ],
+  "browser_receipt": "../../outputs/architecture/backend.visual-check.json",
+  "published_copy": "Byte-identical to the delivered and browser-checked HTML",
+  "in_app_open": "Blocked: browser URL policy disallows file URLs",
+  "delivery_receipt": {
+    "schemaVersion": 1,
+    "ok": true,
+    "command": "deliver",
+    "type": "architecture",
+    "input": "/Users/jiachenboo/.codex/worktrees/offline-drawing-pipeline/AGILE-Nero/docs/architecture/backend.architecture.json",
+    "output": "/Users/jiachenboo/.codex/worktrees/offline-drawing-pipeline/AGILE-Nero/outputs/architecture/backend.html",
+    "specification": {
+      "sha256": "16f25fe54999ca9fd7739956fce5da0c4b3773b7aa473e81ecabc1a2bb347191",
+      "bytes": 6138
+    },
+    "artifact": {
+      "sha256": "97775e5fc6250eaef0cd954ae64e599520a4e5e28a70b9bb1f4d9edd89569a5d",
+      "bytes": 818209
+    },
+    "validation": {
+      "checksPassed": 9,
+      "checkCount": 9,
+      "compositionProfile": "showcase",
+      "compositionStatus": "pass",
+      "errors": 0,
+      "warnings": 0
+    }
+  }
+}

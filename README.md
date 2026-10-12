@@ -23,6 +23,8 @@ PYTHONPATH=src python3.12 -S -m unittest discover -s tests -p test_drawing.py -v
 
 ## 开发环境
 
+图片 / CAD 到机械臂线稿的目标模块连接、数据契约及责任边界见 [后端架构讨论稿](docs/architecture/README.md)。
+
 ```sh
 ./setup.command
 source .venv/bin/activate
