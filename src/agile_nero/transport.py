@@ -1,12 +1,13 @@
 """Native candleLight diagnostics: receive data and query firmware only.
 
 gs-usb 0.3.1 resets USB and detaches a kernel driver on Darwin. Native
-interface claiming works on this Mac without either operation. Starting and
-stopping the adapter changes its USB acquisition mode; CAN ACKs are handled
+interface claiming works on this Mac without either operation. Starting
+the adapter changes its USB acquisition mode; CAN ACKs are handled
 by adapter hardware. All motor/mode/configuration CAN frames are rejected.
 """
 
 import math
+import time
 
 import can
 import usb.core
@@ -52,12 +53,14 @@ class NativeGsUsbBus(can.BusABC):
         self.tx_firmware_queries = 0
         self.rx_counts = {}
         self.rx_error_frames = 0
+        self.rx_last_seen = {}
         device = select_device(channel)
         self._device = device
         self.channel_info = f"candleLight serial={device.serial_number}"
         try:
             usb.util.claim_interface(device.gs_usb, 0)
-            device.stop()
+            device.gs_usb.clear_halt(0x81)
+            device.gs_usb.clear_halt(0x02)
             if not device.set_bitrate(bitrate):
                 raise can.CanInitializationError(f"Unsupported bitrate {bitrate}")
             flags = GS_CAN_MODE_HW_TIMESTAMP & device.device_capability.feature
@@ -108,13 +111,14 @@ class NativeGsUsbBus(can.BusABC):
         elif msg.is_rx:
             key = f"0x{msg.arbitration_id:03X}"
             self.rx_counts[key] = self.rx_counts.get(key, 0) + 1
+            self.rx_last_seen[key] = time.monotonic()
         return msg, False
 
     def shutdown(self):
         if self._device is not None:
-            try:
-                self._device.stop()
-            finally:
-                usb.util.dispose_resources(self._device.gs_usb)
-                self._device = None
+            # Match SocketCAN socket-close semantics: leave adapter CAN active
+            # so its hardware still ACKs. Earlier close/reopen tests coincided
+            # with lost feedback; keep ACK active to remove that possible cause.
+            usb.util.dispose_resources(self._device.gs_usb)
+            self._device = None
         super().shutdown()

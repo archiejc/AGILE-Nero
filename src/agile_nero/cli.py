@@ -135,79 +135,58 @@ def serialize(value):
 
 
 def read_state(channel, bitrate, seconds, known_firmware=None):
-    from pyAgxArm import AgxArmFactory, ArmModel, create_agx_arm_config, resolve_firmware_profile
+    import can
+    from pyAgxArm import ArmModel, resolve_firmware_profile
 
-    def make_robot(profile):
-        return AgxArmFactory.create_arm(
-            create_agx_arm_config(
-                robot=ArmModel.NERO,
-                firmeware_version=profile,
-                interface="nero_gs_usb",
-                channel=channel,
-                bitrate=bitrate,
-                auto_connect=False,
-                enable_check_can=False,
-                timeout=0.1,
-                log_level="ERROR",
-            )
-        )
+    from agile_nero.state import StateDecoder, decode_firmware
 
-    queries = 0
     firmware_source = "user-supplied" if known_firmware else "device-query"
-    if known_firmware:
-        firmware = {"software_version": known_firmware}
-        profile = resolve_firmware_profile(ArmModel.NERO, known_firmware)
-    else:
-        robot = make_robot("default")
-        try:
-            robot.connect()
-            firmware = robot.get_firmware(timeout=3.0)
-            query_bus = robot.get_context().get_comm().recv_bus
-            queries = query_bus.tx_firmware_queries
+    firmware = {"software_version": known_firmware} if known_firmware else None
+    if firmware:
+        resolve_firmware_profile(ArmModel.NERO, known_firmware)
+    with NativeGsUsbBus(channel=channel, bitrate=bitrate) as bus:
+        if firmware is None:
+            bus.send(can.Message(arbitration_id=0x4AF, data=[1], is_extended_id=False))
+            deadline = time.monotonic() + 3.0
+            while time.monotonic() < deadline and firmware is None:
+                firmware = decode_firmware(bus.recv(timeout=0.1))
             if firmware is None:
                 return {
                     "passed": False,
                     "reason": "Firmware query returned no response",
-                    "receive_counts": dict(query_bus.rx_counts),
-                    "firmware_query_frames": queries,
+                    "receive_counts": dict(bus.rx_counts),
+                    "firmware_query_frames": bus.tx_firmware_queries,
                     "motion_frames_sent": 0,
-                    "suggestion": "Check power, green LED, H/L and bitrate. "
-                    "If firmware is known from the web UI, use --firmware VERSION.",
+                    "suggestion": "Verify CAN feedback and retry. If actual firmware is "
+                    "known from the web UI, use --firmware VERSION.",
                 }
-            profile = resolve_firmware_profile(ArmModel.NERO, firmware["software_version"])
+        profile = resolve_firmware_profile(ArmModel.NERO, firmware["software_version"])
+        decoder = StateDecoder(profile)
+        try:
+            started = time.monotonic()
+            while time.monotonic() - started < seconds:
+                message = bus.recv(timeout=0.1)
+                if message is not None:
+                    decoder.feed(message)
+            snapshot = decoder.snapshot()
+            result = serialize(snapshot)
+            result.update(
+                {
+                    "firmware": firmware,
+                    "firmware_source": firmware_source,
+                    "firmware_profile": profile,
+                    "receive_counts": dict(sorted(bus.rx_counts.items())),
+                    "duration_s": round(time.monotonic() - started, 3),
+                    "error_frames": bus.rx_error_frames,
+                    "firmware_query_frames": bus.tx_firmware_queries,
+                    "motion_frames_sent": 0,
+                    "passed": snapshot["joint_feedback_fresh"] and bus.rx_error_frames == 0,
+                    "scope": "Feedback decoding; motion, TCP and trajectories are unvalidated",
+                }
+            )
+            return result
         finally:
-            robot.disconnect()
-
-    robot = make_robot(profile)
-    try:
-        robot.connect()
-        started = time.monotonic()
-        while time.monotonic() - started < seconds:
-            if robot.has_comm_error():
-                raise RuntimeError(str(robot.get_comm_error()))
-            time.sleep(0.05)
-        bus = robot.get_context().get_comm().recv_bus
-        counts = dict(bus.rx_counts)
-        complete_joints = all(f"0x{x:03X}" in counts for x in (0x2A5, 0x2A6, 0x2A7, 0x2A9))
-        complete_pose = all(f"0x{x:03X}" in counts for x in (0x2A2, 0x2A3, 0x2A4))
-        angles = serialize(robot.get_joint_angles()) if complete_joints else None
-        return {
-            "firmware": firmware,
-            "firmware_source": firmware_source,
-            "firmware_profile": profile,
-            "joint_angles_rad": angles,
-            "flange_pose_m_rad": serialize(robot.get_flange_pose()) if complete_pose else None,
-            "arm_status": serialize(robot.get_arm_status()),
-            "joint_motors_enabled": robot.get_joints_enable_status_list(),
-            "receive_counts": dict(sorted(counts.items())),
-            "error_frames": bus.rx_error_frames,
-            "firmware_query_frames": queries,
-            "motion_frames_sent": 0,
-            "passed": complete_joints and angles is not None and bus.rx_error_frames == 0,
-            "scope": "SDK state decoding; no motion, TCP calibration or trajectory validation",
-        }
-    finally:
-        robot.disconnect()
+            decoder.close()
 
 
 def main():

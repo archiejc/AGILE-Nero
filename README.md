@@ -33,7 +33,7 @@ nero read-state --seconds 5
 
 | 部分 | 初步设想 | 需要验证的事项 |
 | --- | --- | --- |
-| 机械臂 | 已确认 AgileX NERO 单臂 | 读取实际固件、核对控制模式与七轴反馈 |
+| 机械臂 | 已确认 AgileX NERO 单臂，CAN 查询固件为 1.11，对应 SDK `v111` | 开启持续 CAN 推送并验收七轴反馈 |
 | 主要计算平台 | Mac Studio / Apple Silicon | 图像处理、模型训练或推理、轨迹规划、仿真与任务编排的兼容性 |
 | 通信 | Mac 直连 candleLight USB-CAN，使用项目 `nero_gs_usb` 后端 | 完成持续反馈与固件读取验收，再验证轨迹执行 |
 | 可选控制网关 | 若 Mac 直连不能满足需求，再加入 Ubuntu 主机 | 负责硬件通信和执行；Mac Studio 继续承担主要研究计算 |

@@ -58,3 +58,22 @@ def test_backend_is_available_to_sdk_without_dynamic_patching():
 
     config = load_config(config={"interface": "nero_gs_usb", "channel": "auto"})
     assert config["interface"] == "nero_gs_usb"
+
+
+def test_open_and_close_preserve_can_ack_peer(monkeypatch):
+    device = Mock(serial_number="test")
+    device.device_capability.feature = 0x10
+    device.set_bitrate.return_value = True
+    claim = Mock()
+    dispose = Mock()
+    monkeypatch.setattr("agile_nero.transport.select_device", lambda _: device)
+    monkeypatch.setattr("agile_nero.transport.usb.util.claim_interface", claim)
+    monkeypatch.setattr("agile_nero.transport.usb.util.dispose_resources", dispose)
+    bus = NativeGsUsbBus(channel="test")
+    claim.assert_called_once_with(device.gs_usb, 0)
+    assert device.gs_usb.clear_halt.call_args_list[0].args == (0x81,)
+    assert device.gs_usb.clear_halt.call_args_list[1].args == (0x02,)
+    bus.shutdown()
+    bus.shutdown()
+    device.stop.assert_not_called()
+    dispose.assert_called_once_with(device.gs_usb)
