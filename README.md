@@ -6,7 +6,20 @@
 
 第一阶段聚焦**平面载体上的线稿绘制**：从简单几何图形和经过整理的彩画线稿入手，逐步实现图像处理、笔画提取、路径规划、仿真验证和实机执行。后续再研究复杂彩画识别、小模型微调、视觉反馈与上色。
 
-> 当前状态：Mac 开发环境已部署，型号已确认是 AgileX NERO。提供环境检查、USB-CAN 枚举、CAN 数据接收和固件 / 状态读取工具。实机通信验收进度见 `docs/deployment-2026-10-12.md`；绘画程序、硬件标定和实验结果将在后续阶段建立。
+> 当前状态：Mac 开发环境已部署，型号已确认是 AgileX NERO。提供环境检查、USB-CAN 枚举、CAN 数据接收和固件 / 状态读取工具，以及独立的离线绘画几何流程。实机通信验收进度见 `docs/deployment-2026-10-12.md`；硬件标定、运动执行和实验结果将在后续阶段建立。
+
+## 离线最小实现
+
+现已提供独立的二维笔画规划、抬落笔路径、几何检查及 JSON / SVG 预览，核心只依赖 Python 3.12 标准库：
+
+```sh
+PYTHONPATH=src python3.12 -S -m agile_nero.drawing \
+  --input examples/drawing/two-strokes.json \
+  --output-dir outputs/offline-demo
+PYTHONPATH=src python3.12 -S -m unittest discover -s tests -p test_drawing.py -v
+```
+
+`--output-dir` 使用新目录；省略时只输出报告。安装项目后可用 `nero-dry-run`。流程只到几何预演，报告固定标记硬件适配及实际执行不可用。MuJoCo、机械臂 SDK、Codex SDK / LangGraph 的模块边界和验证范围见 [离线实现说明](docs/offline-drawing.md)。
 
 ## 开发环境
 
@@ -134,17 +147,18 @@ LangGraph 与 Codex SDK 都属于此前讨论中的候选方向，尚未确定�
 
 ## 仓库组织
 
-当前已有 `pyproject.toml`、`uv.lock`、`src/agile_nero/`、`configs/`、`tests/`、`docs/` 和部署脚本。后续按需扩展以下研究模块：
+当前已有 `pyproject.toml`、`uv.lock`、`src/agile_nero/`、`configs/`、`tests/`、`docs/` 和部署脚本。离线绘画模块位于 `src/agile_nero/drawing/`，后续模块继续在同一 Python 包内按职责扩展：
 
 | 计划目录 | 内容 |
 | --- | --- |
 | `docs/` | 设备记录、架构决策、标定说明与实验协议 |
 | `configs/` | 非敏感的设备、仿真和任务配置 |
-| `src/vision/` | 图像预处理与线稿提取 |
-| `src/planning/` | 笔画与运动轨迹规划 |
-| `src/simulation/` | 仿真模型与验证工具 |
-| `src/robot/` | 设备接口和轨迹执行适配 |
-| `src/workflow/` | Agent 工具接口与流程状态 |
+| `src/agile_nero/drawing/` | 已实现的笔画数据、平面路径、几何校验、预演和工具入口 |
+| `src/agile_nero/vision/` | 后续图像预处理与线稿提取 |
+| `src/agile_nero/planning/` | 后续标定、运动规划与时间参数化 |
+| `src/agile_nero/simulation/` | 后续 MuJoCo 模型与验证适配 |
+| `src/agile_nero/robot/` | 后续 SDK 与轨迹执行适配 |
+| `src/agile_nero/workflow/` | 后续框架编排、持久化和重试 |
 | `examples/` | 获授权的小型示例与演示任务 |
 | `tests/` | 坐标变换、轨迹约束等关键模块的测试 |
 

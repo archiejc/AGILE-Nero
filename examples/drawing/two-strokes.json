@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task_id": "two-strokes",
+  "units": "mm",
+  "frame": "drawing_plane",
+  "workspace": {"width_mm": 100, "height_mm": 80},
+  "planning": {"lift_mm": 5, "max_draw_segment_mm": 2, "max_waypoints": 10000},
+  "strokes": [
+    {"id": "corner", "points": [[10, 10], [40, 10], [40, 40]]},
+    {"id": "diagonal", "points": [[60, 20], [80, 40]]}
+  ]
+}

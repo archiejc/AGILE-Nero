@@ -29,6 +29,7 @@ ml = ["torch>=2.6,<3", "torchvision>=0.21,<1"]
 
 [project.scripts]
 nero = "agile_nero.cli:main"
+nero-dry-run = "agile_nero.drawing.cli:main"
 
 [project.entry-points."can.interface"]
 nero_gs_usb = "agile_nero.transport:NativeGsUsbBus"
