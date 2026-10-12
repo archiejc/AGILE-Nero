@@ -9,11 +9,11 @@
 在仓库根目录执行；`python3.12` 可替换为本机已有的 Python 3.12 解释器：
 
 ```sh
-PYTHONPATH=src python3.12 -S -m agile_nero.drawing \
+PYTHONPATH=src python3.12 -S -m agile_nero.api \
   --input examples/drawing/two-strokes.json \
   --output-dir outputs/offline-demo
 
-PYTHONPATH=src python3.12 -S -m unittest discover -s tests -p test_drawing.py -v
+PYTHONPATH=src python3.12 -S -m unittest discover -s tests/offline -t . -v
 ```
 
 这些命令使用源码运行，直接验证独立模块。安装完整项目后，也可使用 `nero-dry-run --input ...`；现有项目安装仍包含开发环境依赖。离线命令及测试均不运行 `setup.command`、`nero doctor`、USB 枚举或设备诊断。
@@ -36,13 +36,14 @@ PYTHONPATH=src python3.12 -S -m unittest discover -s tests -p test_drawing.py -v
 
 | 模块 | 职责 |
 | --- | --- |
-| `drawing/models.py` | 不可变任务、笔画、配置、路径数据及版本化 JSON |
-| `drawing/planning.py` | 平面边界检查、绘制线段采样、显式抬落笔 |
-| `drawing/validation.py` | 独立检查路径边界、绘制间距、笔画切换和动作顺序 |
-| `drawing/ports.py` | 预演与机器人适配接口、不可执行的硬件占位实现 |
-| `drawing/preview.py` | 离线几何预演、路径长度统计和 SVG |
-| `drawing/workflow.py` | 固定流程及框架中立的 JSON 工具入口 |
-| `drawing/cli.py` | 文件读取、结构化报告及产物写入 |
+| `contracts/drawing.py` | 不可变任务、笔画、配置、路径数据及版本化 JSON |
+| `planning/planar.py`、`planning/metrics.py` | 平面路径生成与长度统计 |
+| `planning/validation.py` | 独立检查路径边界、绘制间距、笔画切换和动作顺序 |
+| `simulation/ports.py`、`simulation/offline.py` | 预演接口及默认离线实现 |
+| `robot/ports.py` | 机器人接口和固定拒绝执行的占位实现 |
+| `artifacts/svg.py` | 可视化产物导出 |
+| `workflow/offline.py` | 固定流程及框架中立的 JSON 工具入口 |
+| `api/cli.py` | 文件读取、结构化报告及产物写入 |
 
 规划序列为 `start → lower → draw... → lift`，下一笔通过 `travel → lower` 接续。`start` 定义离线预览的初始位置，真实环境需要独立的接近规划。`max_draw_segment_mm` 约束绘制段的空间间距；抬落笔与空行程保存目标端点，速度、加速度和控制周期由后续轨迹模块定义。
 
@@ -62,13 +63,15 @@ Codex SDK 或 LangGraph 可包装 `run_tool(payload) -> dict`，或调用独立 
 import json
 from pathlib import Path
 
-from agile_nero.drawing import run_tool
+from agile_nero.workflow.offline import run_tool
 
 payload = json.loads(Path("examples/drawing/two-strokes.json").read_text())
 report = run_tool(payload)
 assert report["status"] == "previewed"
 assert report["physical_execution"] == "unavailable"
 ```
+
+旧的 `python -m agile_nero.drawing` 和 `agile_nero.drawing.*` 导入仍通过兼容入口工作；新开发使用上述职责目录。
 
 ## 验证范围
 

@@ -1,6 +1,6 @@
-"""Dependency-free drawing geometry and offline workflow."""
+"""Compatibility imports; implementation lives in the named domain modules."""
 
-from agile_nero.drawing.models import DrawingTask, Toolpath
-from agile_nero.drawing.workflow import run_task, run_tool
+from agile_nero.contracts.drawing import DrawingTask, Toolpath
+from agile_nero.workflow.offline import run_task, run_tool
 
 __all__ = ["DrawingTask", "Toolpath", "run_task", "run_tool"]

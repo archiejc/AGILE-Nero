@@ -6,7 +6,7 @@ import struct
 import can
 import pytest
 
-from agile_nero.state import StateDecoder, decode_firmware
+from agile_nero.robot.diagnostics.state import StateDecoder, decode_firmware
 
 
 def frame(ident, data):

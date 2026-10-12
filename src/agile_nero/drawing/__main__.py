@@ -1,5 +1,7 @@
+"""Compatibility entry point; prefer python -m agile_nero.api."""
+
 import sys
 
-from agile_nero.drawing.cli import main
+from agile_nero.api.cli import main
 
 sys.exit(main())

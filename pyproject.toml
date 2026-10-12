@@ -28,11 +28,11 @@ workflow = ["langgraph>=1,<2"]
 ml = ["torch>=2.6,<3", "torchvision>=0.21,<1"]
 
 [project.scripts]
-nero = "agile_nero.cli:main"
-nero-dry-run = "agile_nero.drawing.cli:main"
+nero = "agile_nero.robot.diagnostics.cli:main"
+nero-dry-run = "agile_nero.api.cli:main"
 
 [project.entry-points."can.interface"]
-nero_gs_usb = "agile_nero.transport:NativeGsUsbBus"
+nero_gs_usb = "agile_nero.robot.diagnostics.transport:NativeGsUsbBus"
 
 [dependency-groups]
 dev = ["pytest>=8,<10", "ruff>=0.12,<1"]

@@ -48,11 +48,15 @@
 
 ## 现有代码入口
 
-- `src/agile_nero/drawing/models.py`：DrawingTask / Toolpath。
-- `src/agile_nero/drawing/planning.py`、`validation.py`：平面路径与几何检查。
-- `src/agile_nero/drawing/ports.py`：预演接口与禁止执行的硬件占位。
-- `src/agile_nero/drawing/workflow.py`：固定离线流程与 JSON 工具入口。
-- 原有 `state.py`、`transport.py`、诊断 CLI：设备诊断能力，与绘画执行适配分别验收。
+目录按本图的职责组织，完整导航见 [模块索引](../modules.md)。
+
+- `src/agile_nero/contracts/drawing.py`：DrawingTask / Toolpath。
+- `src/agile_nero/planning/`：平面路径、几何检查与长度统计；`motion/` 定义后续机器人规划任务。
+- `src/agile_nero/simulation/`：预演接口和默认几何预演。
+- `src/agile_nero/robot/ports.py`：固定拒绝执行的硬件占位。
+- `src/agile_nero/robot/diagnostics/`：状态解码、传输后端与诊断 CLI。
+- `src/agile_nero/workflow/`、`api/`、`artifacts/`：流程、入口与产物。
+- `src/agile_nero/ingestion/`、`vision/`、`cad/`、`geometry/`：已建立模块说明，实现待开发。
 
 ## 重新生成
 
