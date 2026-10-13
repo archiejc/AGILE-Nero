@@ -2,6 +2,8 @@
 
 每次只需读取：目标模块 README → 相关数据契约 → 对应实现和测试。架构图负责看连接，模块 README 负责说明本模块怎么继续。
 
+内容线交付 DrawingTask / Toolpath；机器人线接收它们并生成目标后端的执行程序。输入输出和验收关口统一见 [双线契约](architecture/track-contracts.md)。
+
 ## 模块索引
 
 | 要做的工作 | 模块入口 | 当前状态 |
@@ -19,6 +21,11 @@
 | 任务流程与编排 | [workflow](../src/agile_nero/workflow/README.md) | 固定离线流程已有；Agent 工作流待接入 |
 | 产物导出与存储 | [artifacts](../src/agile_nero/artifacts/README.md) | SVG 导出已有；任务存储待扩展 |
 | 外部入口 | [api](../src/agile_nero/api/README.md) | 离线 CLI 已有；上传/任务 HTTP API 待建 |
+| 标定与坐标变换 | [calibration](../src/agile_nero/calibration/README.md) | 设计中 |
+| 共享 NERO 模型 | [assets/robots/nero](../assets/robots/nero/README.md) | 设计中；模型尚未导入 |
+| 固件与能力描述 | [robot/profiles](../src/agile_nero/robot/profiles/README.md) | 设计中 |
+| 执行程序与后端 | [robot/backends](../src/agile_nero/robot/backends/README.md) | 三条候选路线，均未适配 |
+| 结果评价 | [evaluation](../src/agile_nero/evaluation/README.md) | 设计中 |
 
 ## 依赖方向
 
@@ -26,7 +33,7 @@ contracts 定义共享数据，业务模块依赖它。planning 负责路径计�
 
 设备依赖集中于 robot/diagnostics。离线入口在禁止加载 SDK、CAN、USB、MuJoCo 和 Agent 框架的测试中运行。仿真与设备适配通过各自的 ports.py 扩展。
 
-模型和解析器输出候选几何，由 geometry 统一为 DrawingTask。未来 planning/motion 把平面 Toolpath 转为带机器人模型、标定版本和时间的轨迹。
+模型和解析器输出候选几何，由 geometry 统一为 DrawingTask。未来 planning/motion 生成保留笔尖意图的 MotionPlan；robot/backends 按 RobotProfile 编译成 ExecutionPlan。calibration 与 assets/robots/nero 为规划、仿真和转换提供同一份依据。
 
 ## 给下一次任务的上下文模板
 
@@ -45,13 +52,15 @@ contracts 定义共享数据，业务模块依赖它。planning 负责路径计�
 
 后续任务记入模块 README 的“下一步”；跨模块顺序写入 [路线图](roadmap.md)。代码变动时同步本模块说明和测试，让重要决定可以从仓库中找到。
 
+机器人线任务使用另一组上下文：planning/motion/README.md、calibration/README.md、robot/profiles/README.md、robot/backends/README.md，以及双线契约中的 R1–R3。首个交付只编译和验证共用样例，执行范围为离线。
+
 ## 分支与迁移
 
-本轮代码和文档在 PR #1 的 codex/offline-drawing-pipeline 分支。
+PR #1 已合并远端 main。本轮双线设计在 codex/two-track-backend-architecture 分支，从已合并版本继续。
 
 - PR 工作树：/Users/jiachenboo/.codex/worktrees/offline-drawing-pipeline/AGILE-Nero。
 - 日常主目录：/Users/jiachenboo/Research/AGILE-Nero，目前仍有 main 上未提交的硬件调试改动。
-- 合并前先按下表逐项移植这些改动，再核验测试；本次没有把它们收进目录重构提交。
+- 同步本地主目录前，按下表逐项核对其未提交改动；它们没有被收进本轮架构提交。
 
 | 原位置 | 当前实现位置 |
 | --- | --- |

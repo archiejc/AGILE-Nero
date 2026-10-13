@@ -1,69 +1,38 @@
-# Backend 架构讨论稿
+# 双线后端目标架构
 
-目标是把用户上传的图片或 CAD 文件转换为经过验证、可以交给机械臂执行的线稿任务。图中展示目标架构；标签区分已有实现、接口预留和规划模块。已有能力以 PR #1 的离线代码为依据，核心代码基线为 `ae3ba4138832bda8c14f2bb06747da67a4d9784c`。
+架构分为内容线与机器人线。内容线交付确认的笔画和毫米平面路径；机器人线结合共享模型、标定和能力，生成特定后端的执行程序。该图是目标设计，节点直接标明已有、规划和禁用状态。
 
-交互图：[backend.html](backend.html)（下载后用浏览器打开）。架构源文件：[backend.architecture.json](backend.architecture.json)。图中支持缩放、节点查看、主题切换和导出；验证与截图审查记录见 [backend.receipt.json](backend.receipt.json)。
+[交互架构图](backend.html) · [架构源文件](backend.architecture.json) · [生成与验证记录](backend.receipt.json)
 
-![后端目标架构](backend.preview.png)
+![双线后端目标架构](backend.preview.png)
 
-## 主链路
+## 先看边界与验收
 
-图片通过模型识别、线条提取和矢量化产生候选笔画；CAD 优先解析图层与原生曲线。两路输入汇合为可审查、可编辑的统一线稿，再依次生成平面路径和机器人轨迹，经仿真、验证与操作者授权后进入执行模块。
+- [双线契约](track-contracts.md)：每个阶段的输入、输出、责任、能力条件和验收关口，是本设计的权威说明。
+- [共用样例](../../examples/acceptance/README.md)：两条直线、一段圆弧、两次笔画间抬笔；离散几何阈值与未来实机阈值分别定义。
+- [路线图](../roadmap.md)：C1–C2 与 R1–R3 分别推进，J1 离线汇合后才讨论单独授权的 H1。
+- [模块导航](../modules.md)：按目录定位具体工作上下文。
 
-图中的编排和存储属于贯穿各阶段的公共能力，连接线展示代表性调用。所有阶段通过 task_id 和不可变产物版本关联；编排器负责组织步骤，存储负责保留输入、结果和证据。
+## 关键设计
 
-这是一张逻辑模块图。首版可由同一 Python 后端与后台任务执行器承载这些模块，模块边界通过结构化数据和接口实现。
+图片走识别与线条提取，CAD/SVG 优先解析原生几何，统一成 DrawingTask / Toolpath。MotionPlan 保留基座坐标下的笔尖运动意图；ExecutionPlan 才是控制器文件、SDK 运动段或关节轨迹等特定表示。
 
-## 模块之间传什么
+calibration、assets/robots/nero 和 robot/profiles 为规划、仿真与后端转换提供统一依据。三个候选后端放在 robot/backends 下，先验收一条路线；硬件绘画执行器目前仍固定拒绝调用。
 
-| 模块 | 接收与输出 | 责任边界 | 当前状态 |
-| --- | --- | --- | --- |
-| 上传与任务 API | 文件、格式、目标尺寸、画面区域 → AssetRef、Job | 文件检查、任务创建与进度查询；耗时处理交给后台任务 | 待实现 |
-| 图像识别 | 图片 → 候选线条、区域、置信度及来源 | 模型判断画什么；后续几何程序完成中心线和曲线表示 | 待实现 |
-| CAD 解析 | CAD → 图层、曲线、单位和坐标信息 | 优先保留矢量几何；可按需加入语义识别或图层筛选 | 待实现 |
-| 统一线稿 | 候选几何、用户校正、目标尺度 → DrawingTask | 明确毫米单位、画面原点、笔画选择和顺序；确认低置信度结果 | 已有手工笔画数据契约；识别结果接入及编辑确认待实现 |
-| 平面路径规划 | DrawingTask → Toolpath | 平面采样、抬落笔与空行程；后续增加笔画排序、平滑和路径优化 | 基础采样、抬落笔和几何检查已实现 |
-| 机器人轨迹规划 | Toolpath、模型、标定、TCP、约束 → RobotTrajectory | 坐标变换、末端姿态、IK、关节约束及时间参数化；包括起点接近和结束撤离 | 待实现 |
-| MuJoCo 适配 | RobotTrajectory、场景与模型版本 → SimulationReport | 验证模型范围内的可达性、碰撞、轨迹和接触假设 | 预演接口已预留；机器人仿真待实现 |
-| 验证门 | 轨迹、报告、标定版本、操作者确认 → ExecutionPermit | 对同一轨迹版本作放行判断；轨迹或配置变化使原放行失效 | 待实现 |
-| 设备执行 | 已授权轨迹 → 执行事件、状态与终止结果 | SDK 通信、下发节奏、停止处理和故障上报；禁止无条件重放运动任务 | 占位实现固定拒绝执行 |
-| 结果与评估 | 执行记录、后续采集图像 → 线稿结果与误差报告 | 区分命令已发送、运动已完成和绘制质量达标 | 待实现 |
+MuJoCo 作为验证适配器，不代替运动规划。原生控制器语义未知时只提供名义预演证据。最终授权必须绑定具体程序、模型、标定、能力、场景与起始状态条件，并要求适配验收和人工确认。
 
-`RobotTrajectory`、`SimulationReport` 和 `ExecutionPermit` 是建议新增的契约。当前 `PreviewBackend` 接收 `Toolpath`，只作为离线预演扩展点；接入机器人仿真时，需要补齐关节轨迹、机器人模型、标定和场景版本的关联。
+workflow 调度受约束的工具，artifacts 管理产物。图中公共编排的连线是主要调用，不把它表示成高频控制器；当前 JSON 写入实际位于 api/cli，存储服务与跨阶段工作流仍待实现。
 
-## 四个核心边界
+## 当前代码事实
 
-1. **识别与几何。** 模型输出候选内容和置信度；确定性的几何程序处理尺度、曲线、采样及连续性。用户可以检查和校正识别结果。
-2. **平面路径与机器人轨迹。** Toolpath 使用绘画平面中的毫米坐标；RobotTrajectory 才包含机器人坐标、关节量与时间。二者之间必须有标定与运动规划。
-3. **编排与执行。** Codex SDK / LangGraph 可调度受约束的工具、读取报告和管理重试。高频控制与停止处理由设备执行模块承担。
-4. **验证与放行。** 当前几何检查与未来机器人仿真分别记录验证范围。执行授权绑定精确轨迹及配置版本，硬件验收完成后才接入执行流程。
+- contracts/drawing.py：已有 DrawingTask / Toolpath，单位 mm、drawing_plane。
+- planning/planar.py、planning/validation.py：已有平面采样、边界与抬落笔检查。
+- workflow/offline.py、simulation/offline.py：固定流程只到几何预演，结果绑定 path_sha256。
+- api/cli.py、artifacts/svg.py：已有 JSON / SVG 产物。
+- robot/ports.py：UnadaptedRobotBackend 始终拒绝物理执行。
 
-后台任务首先需要可追踪的状态：上传、解析、待确认、规划、验证、待授权、执行、完成，以及失败或取消。自动重试适用于明确可重复的处理步骤；发生部分物理执行后，由执行模块记录进度并进入显式恢复流程。
-
-## 图片和 CAD 的首版范围
-
-第一版面向固定平面上的线稿。图片路线先得到可检查的二维笔画；CAD 路线建议先支持二维 DXF。DWG 转换作为独立输入适配器，三维 CAD 则先确定投影视图或绘画平面。具体格式支持将在实现时逐项验证，上传界面只列出已经支持的格式。
-
-模型类型、CAD 转换器、任务数据库和工作流框架均可替换。优先固定的是各阶段输入输出、单位、坐标系、版本和错误状态。
-
-## 现有代码入口
-
-目录按本图的职责组织，完整导航见 [模块索引](../modules.md)。
-
-- `src/agile_nero/contracts/drawing.py`：DrawingTask / Toolpath。
-- `src/agile_nero/planning/`：平面路径、几何检查与长度统计；`motion/` 定义后续机器人规划任务。
-- `src/agile_nero/simulation/`：预演接口和默认几何预演。
-- `src/agile_nero/robot/ports.py`：固定拒绝执行的硬件占位。
-- `src/agile_nero/robot/diagnostics/`：状态解码、传输后端与诊断 CLI。
-- `src/agile_nero/workflow/`、`api/`、`artifacts/`：流程、入口与产物。
-- `src/agile_nero/ingestion/`、`vision/`、`cad/`、`geometry/`：已建立模块说明，实现待开发。
+新增目录当前保存契约与验收说明，不伪装成已经实现的适配器。图内 source 链接固定到生成时的已提交证据版本，设计来源与代码来源均明确标注。
 
 ## 重新生成
 
-使用已安装的 Archify：
-
-```sh
-node /Users/jiachenboo/.codex/skills/archify/bin/archify.mjs deliver architecture \
-  docs/architecture/backend.architecture.json outputs/architecture/backend.html \
-  --quality showcase --json
-```
+使用 Archify 3.x，在仓库根目录调用 finalize，并提供 --repo-root。本轮原始 candidate、HTML 和质量记录按请求保存在 .archify 的独立子目录；发布副本与证据位置由 backend.receipt.json 记录。

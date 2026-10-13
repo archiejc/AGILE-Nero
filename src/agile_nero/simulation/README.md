@@ -8,7 +8,7 @@
 
 ## 输入与输出
 
-Toolpath → PreviewReport；机器人仿真接入时补齐轨迹/模型/标定版本。
+当前 Toolpath → PreviewReport；目标 ExecutionPlan → 后端验证报告，补齐模型/标定/场景/能力版本。
 
 ## 先读哪些文件
 
@@ -21,6 +21,12 @@ Toolpath → PreviewReport；机器人仿真接入时补齐轨迹/模型/标定�
 
 测试入口：[tests/offline/workflow](../../../tests/offline/workflow)。
 
+## 双线交付边界
+
+- 所属：机器人线验证；兼容已有内容几何预演。
+- 交付：ExecutionPlan + 模型/标定/场景/能力 → 后端验证报告（拟定）。
+- 验收关口：R3，定义见 [双线契约](../../../docs/architecture/track-contracts.md)。
+
 ## 下一步
 
-结合 motion 的轨迹契约接入实际 NERO 模型；明确几何、碰撞和接触验证范围。
+保留 PreviewBackend(Toolpath) 离线接口；新增机器人验证契约时区分 nominal_preview 和实际后端语义验证。

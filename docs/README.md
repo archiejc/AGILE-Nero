@@ -3,6 +3,7 @@
 | 想了解什么 | 读这里 |
 | --- | --- |
 | 去哪个目录改代码、如何提供上下文 | [modules.md](modules.md) |
+| 两条线的边界、输入输出、验收关口 | [architecture/track-contracts.md](architecture/track-contracts.md) |
 | 下一步和每一步的完成标准 | [roadmap.md](roadmap.md) |
 | 模块连接与后端架构 | [architecture/README.md](architecture/README.md) |
 | 运行离线最小实现 | [offline-drawing.md](offline-drawing.md) |

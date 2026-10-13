@@ -22,6 +22,12 @@ DrawingTask → Toolpath、ValidationReport、路径长度统计。
 
 测试入口：[tests/offline/planning](../../../tests/offline/planning)。
 
+## 双线交付边界
+
+- 所属：内容线。
+- 交付：DrawingTask → Toolpath + 几何报告。
+- 验收关口：C2，定义见 [双线契约](../../../docs/architecture/track-contracts.md)。
+
 ## 下一步
 
-在固定样例上比较笔画排序、平滑与空行程；机器人轨迹工作放 motion 子目录。
+保留现有离线接口；使用两直线一圆弧样例比较排序、平滑、空行程和抬笔策略。

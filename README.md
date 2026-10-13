@@ -7,7 +7,7 @@
 ## 从这里开始
 
 1. 看 [模块导航](docs/modules.md)，找到本次工作的目录。
-2. 看 [路线图](docs/roadmap.md)，选择一个可独立验收的任务。
+2. 看 [双线契约](docs/architecture/track-contracts.md)和[路线图](docs/roadmap.md)，从内容线或机器人线选择一个可离线验收的任务。
 3. 进入该模块的 README，读取状态、输入输出、代码、测试和下一步。
 
 [后端架构与交互图](docs/architecture/README.md) · [离线运行](docs/offline-drawing.md) · [完整环境](docs/environment.md) · [研究背景](docs/project-background.md)
@@ -22,10 +22,14 @@ src/agile_nero/
 ├── cad/             CAD 图层与曲线解析                [规划]
 ├── geometry/        单位、坐标与统一笔画               [规划]
 ├── planning/        平面路径、几何检查与长度统计
-│   └── motion/      标定、IK 与机器人轨迹              [规划]
+│   └── motion/      笔尖运动意图、IK 与进给约束         [规划]
+├── calibration/     TCP / 画板坐标变换与标定版本       [规划]
 ├── simulation/      离线预演与仿真接口；MuJoCo 待接入
 ├── robot/           禁用的执行占位
-│   └── diagnostics/ 设备状态、CAN 传输与诊断工具
+│   ├── diagnostics/ 设备状态、CAN 传输与诊断工具
+│   ├── profiles/    型号、固件与能力                   [规划]
+│   └── backends/    controller_file / pyagxarm / ros2   [规划]
+├── evaluation/      反馈、笔尖误差与线稿评价           [规划]
 ├── workflow/        固定离线流程；Agent 工作流待接入
 ├── artifacts/       SVG 产物；任务与结果存储待扩展
 ├── api/             离线 CLI；上传与任务 HTTP API 待接入
@@ -33,7 +37,8 @@ src/agile_nero/
 
 tests/offline/       无第三方依赖的测试，内部按模块分组
 tests/robot/         SDK 解码与模拟传输测试，不连接设备
-examples/           小型可复现输入
+assets/robots/nero/  共享模型、工具与场景 manifest       [规划]
+examples/           小型可复现输入与双线共用验收样例
 configs/            示例配置；本机配置放 configs/local/
 docs/               导航、路线图、架构和设备记录
 outputs/            运行产物，Git 忽略
@@ -54,8 +59,8 @@ PYTHONPATH=src python3.12 -S -m unittest discover -s tests/offline -t . -v
 
 ## 下一步
 
-建议先完成 **二维 DXF → DrawingTask → 现有离线预览**。从 [cad](src/agile_nero/cad/README.md)、[geometry](src/agile_nero/geometry/README.md) 和 [contracts](src/agile_nero/contracts/README.md) 开始，以单位正确、曲线转换正确、错误可解释和 SVG 可检查作为验收条件，再接入图片识别路线。
+内容线推进二维向量输入 → DrawingTask → 几何预览；机器人线从同一[两直线一圆弧样例](examples/acceptance/README.md)开始，建立模型/标定/能力，再离线准备并验证一个后端的程序。具体输入输出和 C1–H1 验收条件见 [双线契约](docs/architecture/track-contracts.md)。
 
-开始下一次任务时，先确认 git status --short --branch。本轮整理在 PR #1 分支；主目录中的未提交硬件调试改动需在合并前逐项核对。见 [分支与迁移说明](docs/modules.md#分支与迁移)。
+开始下一次任务时，先确认 git status --short --branch。PR #1 已合并；本轮架构更新另用 codex/two-track-backend-architecture 分支。主目录的未提交硬件调试内容在同步前仍需独立核对，见 [迁移说明](docs/modules.md#分支与迁移)。
 
 项目尚未选定许可证，第三方依赖和输入资料按各自许可使用。
