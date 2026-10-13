@@ -59,8 +59,11 @@ class NativeGsUsbBus(can.BusABC):
         self.channel_info = f"candleLight serial={device.serial_number}"
         try:
             usb.util.claim_interface(device.gs_usb, 0)
-            device.gs_usb.clear_halt(0x81)
-            device.gs_usb.clear_halt(0x02)
+            # Do not clear healthy bulk endpoints on reconnect. On candleLight
+            # this can discard the pending IN packet without running DataIn,
+            # leaving firmware TxState busy and its frame pool undrainable.
+            # Interface claiming preserves endpoint state; a genuine stall is
+            # surfaced as a USB error rather than reset during every open.
             if not device.set_bitrate(bitrate):
                 raise can.CanInitializationError(f"Unsupported bitrate {bitrate}")
             flags = GS_CAN_MODE_HW_TIMESTAMP & device.device_capability.feature
