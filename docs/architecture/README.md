@@ -10,6 +10,7 @@
 
 - [双线契约](track-contracts.md)：每个阶段的输入、输出、责任、能力条件和验收关口，是本设计的权威说明。
 - [共用样例](../../examples/acceptance/README.md)：两条直线、一段圆弧、两次笔画间抬笔；离散几何阈值与未来实机阈值分别定义。
+- [样例离线证据](acceptance-evidence.json)：现有程序已验证 55 个路径点和约 0.048 mm 的合成几何弦偏差。
 - [路线图](../roadmap.md)：C1–C2 与 R1–R3 分别推进，J1 离线汇合后才讨论单独授权的 H1。
 - [模块导航](../modules.md)：按目录定位具体工作上下文。
 
@@ -36,3 +37,9 @@ workflow 调度受约束的工具，artifacts 管理产物。图中公共编排�
 ## 重新生成
 
 使用 Archify 3.x，在仓库根目录调用 finalize，并提供 --repo-root。本轮原始 candidate、HTML 和质量记录按请求保存在 .archify 的独立子目录；发布副本与证据位置由 backend.receipt.json 记录。
+
+```sh
+node /Users/jiachenboo/.codex/skills/archify/bin/archify.mjs finalize architecture docs/architecture/backend.architecture.json outputs/architecture/two-tracks.html --repo-root . --quality showcase --json
+```
+
+复现需要本地 Git 中包含 source 指向的固定提交。发布 HTML 与原始产物逐字节一致，自动检查与截图审查分别记录；页面下方的验收卡片按正常文档流阅读。

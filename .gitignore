@@ -4,6 +4,7 @@
 .idea/
 .vscode/
 .local/
+.archify/
 
 # Python environments and caches
 .venv/

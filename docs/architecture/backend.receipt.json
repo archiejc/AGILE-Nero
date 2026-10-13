@@ -1,46 +1,66 @@
 {
   "diagram_type": "architecture",
   "output": "/Users/jiachenboo/.codex/worktrees/offline-drawing-pipeline/AGILE-Nero/docs/architecture/backend.html",
-  "specification_sha256": "16f25fe54999ca9fd7739956fce5da0c4b3773b7aa473e81ecabc1a2bb347191",
-  "artifact_sha256": "97775e5fc6250eaef0cd954ae64e599520a4e5e28a70b9bb1f4d9edd89569a5d",
-  "specification_bytes": 6138,
-  "artifact_bytes": 818209,
+  "specification_sha256": "099302fb4d42c5939622e2a686d53cd72287835e1fc01641bb33c1326c340ad5",
+  "artifact_sha256": "226ae13b6d978e2e13c9a612ab6794e9758f41c4d8b1e18c94e65960a401aa55",
+  "specification_bytes": 12404,
+  "artifact_bytes": 782830,
+  "repository_revision": "ad0dc8eb241288eb673c455bcd582dffbc5e609f",
   "validation": "9/9 showcase, 0 errors, 0 warnings",
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
   "browser_evidence": "passed",
+  "captures": "passed",
   "visual_review": "passed",
   "correction_rounds": 1,
-  "visual_review_scope": "Image review of READ/Still at 1440x900 and 2048x1320 in light and dark themes; labels, paths, status visibility, node/card fit and vertical balance checked. Interactive controls and exports were not exercised.",
+  "visual_review_scope": "READ/Still main-diagram nodes, routes, labels, ownership boundaries and status text inspected in light/dark captures at 1440x900 and 2048x1320. Supporting acceptance cards use normal document flow below the diagram. Interactive controls and exports were not manually exercised.",
   "browser_viewports": [
-    "1440x900",
-    "1600x1000",
-    "1920x1080",
-    "2048x1320"
-  ],
-  "browser_receipt": "../../outputs/architecture/backend.visual-check.json",
-  "published_copy": "Byte-identical to the delivered and browser-checked HTML",
-  "in_app_open": "Blocked: browser URL policy disallows file URLs",
-  "delivery_receipt": {
-    "schemaVersion": 1,
-    "ok": true,
-    "command": "deliver",
-    "type": "architecture",
-    "input": "/Users/jiachenboo/.codex/worktrees/offline-drawing-pipeline/AGILE-Nero/docs/architecture/backend.architecture.json",
-    "output": "/Users/jiachenboo/.codex/worktrees/offline-drawing-pipeline/AGILE-Nero/outputs/architecture/backend.html",
-    "specification": {
-      "sha256": "16f25fe54999ca9fd7739956fce5da0c4b3773b7aa473e81ecabc1a2bb347191",
-      "bytes": 6138
+    {
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "overflowX": false,
+      "overflowY": false,
+      "verticalScrollAccepted": false
     },
-    "artifact": {
-      "sha256": "97775e5fc6250eaef0cd954ae64e599520a4e5e28a70b9bb1f4d9edd89569a5d",
-      "bytes": 818209
+    {
+      "width": 1600,
+      "height": 1000,
+      "scrollWidth": 1600,
+      "scrollHeight": 1000,
+      "overflowX": false,
+      "overflowY": false,
+      "verticalScrollAccepted": false
     },
-    "validation": {
-      "checksPassed": 9,
-      "checkCount": 9,
-      "compositionProfile": "showcase",
-      "compositionStatus": "pass",
-      "errors": 0,
-      "warnings": 0
+    {
+      "width": 1920,
+      "height": 1080,
+      "scrollWidth": 1920,
+      "scrollHeight": 1080,
+      "overflowX": false,
+      "overflowY": false,
+      "verticalScrollAccepted": false
+    },
+    {
+      "width": 2048,
+      "height": 1320,
+      "scrollWidth": 2048,
+      "scrollHeight": 1320,
+      "overflowX": false,
+      "overflowY": false,
+      "verticalScrollAccepted": false
     }
-  }
+  ],
+  "archify_version": "3.0.1",
+  "source_directory": ".archify/architecture-backend-two-tracks-20261013-184054",
+  "finalize_summary": "backend.finalize-summary.json",
+  "original_browser_receipt": ".archify/architecture-backend-two-tracks-20261013-184054/review-3/backend-two-tracks.browser-check.json",
+  "original_capture_receipt": ".archify/architecture-backend-two-tracks-20261013-184054/review-3/visual-check/backend-two-tracks.visual-check.json",
+  "published_copy": "Byte-identical to the finalized and browser-checked artifact; original provenance and evidence remain in the source directory.",
+  "physical_execution": "not performed; runtime Python unchanged"
 }
