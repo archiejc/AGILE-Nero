@@ -20,6 +20,12 @@
 
 测试入口：[tests/offline/artifacts](../../../tests/offline/artifacts)。
 
+## 双线交付边界
+
+- 所属：两条线的公共产物管理。
+- 交付：原文件/中间产物/程序/报告/事件 → 版本化存储引用。
+- 验收关口：J1，定义见 [双线契约](../../../docs/architecture/track-contracts.md)。
+
 ## 下一步
 
-任务 API 接入时把 JSON 写入与目录管理收拢到这里，保持业务计算独立于文件系统。
+现有 SVG 导出继续可用；未来从 api/cli 收拢 JSON 写入与任务存储，记录精确程序和配置指纹。

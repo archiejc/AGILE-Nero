@@ -1,0 +1,14 @@
+{
+  "fixture": "examples/drawing/acceptance-pattern.json",
+  "scope": "synthetic drawing geometry only",
+  "status": "passed",
+  "metrics": {
+    "waypoint_count": 55,
+    "stroke_count": 3,
+    "draw_length_mm": 91.36548490540544,
+    "non_drawing_length_mm": 62.3606797749979
+  },
+  "max_chord_deviation_mm": 0.04815273327803071,
+  "path_sha256": "3360eae2d5e7ca4223cb3200b5bcc904de6affd563d45b1a9babddee8817bb52",
+  "physical_execution": "unavailable"
+}

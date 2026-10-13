@@ -2,300 +2,548 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "AGILE-Nero · 后端目标架构",
+    "title": "AGILE-Nero · 内容线与机器人线",
     "locale": "zh-CN",
     "quality_profile": "showcase",
-    "viewBox": [
-      1390,
-      700
-    ]
+    "output": ".archify/architecture-backend-two-tracks-20261013-184054/backend-two-tracks.html",
+    "repository": {
+      "url": "https://github.com/archiejc/AGILE-Nero.git",
+      "provider": "github",
+      "revision": "ad0dc8eb241288eb673c455bcd582dffbc5e609f"
+    }
   },
   "components": [
     {
-      "id": "ingest",
-      "type": "backend",
-      "label": "上传与任务 API",
-      "sublabel": "规划 · 图片 / CAD 与任务参数",
-      "tag": "规划",
+      "id": "inputs",
+      "type": "external",
+      "label": "图片 / CAD / SVG",
+      "sublabel": "规划 · 文件接入与任务参数",
       "pos": [
-        50.0,
-        160
+        32.0,
+        70
       ],
       "size": [
         220,
-        76
+        80
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 5,
+          "end_line": 18,
+          "label": "目标：内容线"
+        }
       ]
     },
     {
-      "id": "vision",
+      "id": "interpret",
       "type": "backend",
-      "label": "图像识别与线条提取",
-      "sublabel": "规划 · 模型识别 / 中心线 / 矢量化",
-      "tag": "规划",
+      "label": "识别与原生解析",
+      "sublabel": "规划 · 图片模型 / 矢量解析",
       "pos": [
-        390.0,
-        90
+        329.0,
+        70
       ],
       "size": [
         220,
-        76
-      ]
-    },
-    {
-      "id": "cad",
-      "type": "backend",
-      "label": "CAD 几何解析",
-      "sublabel": "规划 · 图层 / 曲线 / 单位 / 视图",
-      "tag": "规划",
-      "pos": [
-        390.0,
-        300
+        80
       ],
-      "size": [
-        220,
-        76
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 5,
+          "end_line": 18,
+          "label": "目标：内容线"
+        }
       ]
     },
     {
       "id": "strokes",
       "type": "backend",
-      "label": "统一线稿与几何确认",
-      "sublabel": "数据契约已有 · 编辑与确认待建",
-      "tag": "部分实现",
+      "label": "统一笔画与确认",
+      "sublabel": "DrawingTask 已有 · 校正待建",
       "pos": [
-        730.0,
-        160
+        626.0,
+        70
       ],
       "size": [
         220,
-        76
+        80
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 5,
+          "end_line": 18,
+          "label": "目标：内容线"
+        },
+        {
+          "path": "src/agile_nero/contracts/drawing.py",
+          "line": 85,
+          "end_line": 156,
+          "label": "已有数据契约"
+        }
       ]
     },
     {
       "id": "planar",
       "type": "backend",
-      "label": "笔画与平面路径规划",
-      "sublabel": "已有采样与抬落笔 · 排序待扩展",
-      "tag": "基础已实现",
+      "label": "平面绘画路径",
+      "sublabel": "已有 · 采样、抬落笔与边界检查",
       "pos": [
-        1070.0,
-        160
+        923.0,
+        70
       ],
       "size": [
         220,
-        76
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/agile_nero/planning/planar.py",
+          "line": 8,
+          "end_line": 48,
+          "label": "已有平面规划"
+        },
+        {
+          "path": "src/agile_nero/planning/validation.py",
+          "line": 23,
+          "end_line": 70,
+          "label": "已有几何检查"
+        }
       ]
     },
     {
-      "id": "robotplan",
+      "id": "preview",
       "type": "backend",
-      "label": "机器人轨迹规划",
-      "sublabel": "待建 · 标定 / TCP / IK / 时间参数化",
-      "tag": "规划",
+      "label": "内容线验收与预览",
+      "sublabel": "已有 JSON / SVG · C1 转换待验",
       "pos": [
-        1070.0,
-        510
+        923.0,
+        280
       ],
       "size": [
         220,
-        76
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/agile_nero/api/cli.py",
+          "line": 24,
+          "end_line": 57,
+          "label": "实际文件写入方"
+        },
+        {
+          "path": "src/agile_nero/workflow/offline.py",
+          "line": 38,
+          "end_line": 88,
+          "label": "已有离线编排"
+        },
+        {
+          "path": "examples/acceptance/README.md",
+          "line": 1,
+          "end_line": 35,
+          "label": "共用合成样例"
+        }
       ]
     },
     {
-      "id": "simulation",
+      "id": "configuration",
+      "type": "database",
+      "label": "模型、标定与能力",
+      "sublabel": "规划 · 模型 / TCP / 画板 / 固件",
+      "pos": [
+        626.0,
+        280
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "assets/robots/nero/README.md",
+          "line": 1,
+          "end_line": 23,
+          "label": "目标：模型资产"
+        },
+        {
+          "path": "src/agile_nero/calibration/README.md",
+          "line": 1,
+          "end_line": 23,
+          "label": "目标：标定"
+        },
+        {
+          "path": "src/agile_nero/robot/profiles/README.md",
+          "line": 1,
+          "end_line": 23,
+          "label": "目标：固件能力"
+        }
+      ]
+    },
+    {
+      "id": "orchestration",
+      "type": "messagebus",
+      "label": "任务编排",
+      "sublabel": "离线流程已有 · 跨阶段待建",
+      "pos": [
+        329.0,
+        280
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 83,
+          "end_line": 88,
+          "label": "目标：公共编排与存储"
+        },
+        {
+          "path": "src/agile_nero/workflow/offline.py",
+          "line": 38,
+          "end_line": 88,
+          "label": "已有固定流程"
+        }
+      ]
+    },
+    {
+      "id": "storage",
+      "type": "database",
+      "label": "任务与产物存储",
+      "sublabel": "规划 · 原文件、版本与事件",
+      "pos": [
+        32.0,
+        280
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 83,
+          "end_line": 88,
+          "label": "目标：公共编排与存储"
+        }
+      ]
+    },
+    {
+      "id": "motion",
       "type": "backend",
-      "label": "MuJoCo 仿真与验证",
-      "sublabel": "接口预留 · 机器人仿真待建",
-      "tag": "接口已预留",
+      "label": "笔尖运动规划",
+      "sublabel": "规划 · 姿态、进给、接近与撤离",
       "pos": [
-        730.0,
-        510
+        626.0,
+        460
       ],
       "size": [
         220,
-        76
+        80
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 19,
+          "end_line": 34,
+          "label": "目标：机器人线"
+        },
+        {
+          "path": "src/agile_nero/planning/motion/README.md",
+          "line": 1,
+          "end_line": 31,
+          "label": "目标：MotionPlan"
+        }
       ]
     },
     {
-      "id": "release",
+      "id": "compiler",
+      "type": "backend",
+      "label": "后端程序编译",
+      "sublabel": "规划 · 控制器文件 / SDK / ROS2",
+      "pos": [
+        329.0,
+        460
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 50,
+          "end_line": 59,
+          "label": "目标：三个后端"
+        },
+        {
+          "path": "src/agile_nero/robot/backends/README.md",
+          "line": 1,
+          "end_line": 23,
+          "label": "目标：无副作用的准备"
+        }
+      ]
+    },
+    {
+      "id": "validation",
+      "type": "backend",
+      "label": "仿真与能力校验",
+      "sublabel": "规划 · MuJoCo + 后端语义校验",
+      "pos": [
+        32.0,
+        460
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 60,
+          "end_line": 66,
+          "label": "目标：分级验证"
+        },
+        {
+          "path": "src/agile_nero/simulation/README.md",
+          "line": 1,
+          "end_line": 32,
+          "label": "已有与待建验证范围"
+        }
+      ]
+    },
+    {
+      "id": "authorization",
       "type": "security",
-      "label": "验证门与执行授权",
-      "sublabel": "规划 · 轨迹版本绑定与人工确认",
-      "tag": "规划",
+      "label": "执行授权门",
+      "sublabel": "规划 · 同版验证通过 + 人工确认",
       "pos": [
-        390.0,
-        510
+        32.0,
+        650
       ],
       "size": [
         220,
-        76
+        80
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 19,
+          "end_line": 34,
+          "label": "目标：机器人线"
+        },
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 35,
+          "end_line": 49,
+          "label": "目标：授权与版本"
+        }
       ]
     },
     {
       "id": "executor",
       "type": "backend",
-      "label": "设备执行适配器",
-      "sublabel": "未适配 / 禁用 · SDK 与停止处理",
-      "tag": "未适配 / 禁用",
+      "label": "设备执行适配",
+      "sublabel": "当前禁用 · 完成适配后才可执行",
       "pos": [
-        50.0,
-        510
+        329.0,
+        650
       ],
       "size": [
         220,
-        76
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/agile_nero/robot/ports.py",
+          "line": 8,
+          "end_line": 18,
+          "label": "已有固定拒绝"
+        },
+        {
+          "path": "docs/architecture/track-contracts.md",
+          "line": 19,
+          "end_line": 34,
+          "label": "目标：机器人线"
+        }
       ]
     },
     {
-      "id": "drawing",
-      "type": "external",
-      "label": "机械臂与线稿结果",
-      "sublabel": "目标 · 执行反馈与后续图像评估",
-      "tag": "目标结果",
+      "id": "evaluation",
+      "type": "backend",
+      "label": "反馈与线稿评价",
+      "sublabel": "规划 · 笔尖偏差、停顿与质量",
       "pos": [
-        50.0,
-        335
+        626.0,
+        650
       ],
       "size": [
         220,
-        76
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/agile_nero/evaluation/README.md",
+          "line": 1,
+          "end_line": 23,
+          "label": "目标：测量与人工复核"
+        }
       ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "内容线 · 识别与绘画几何的职责边界",
+      "wraps": [
+        "interpret",
+        "strokes",
+        "planar"
+      ],
+      "pad": 26
     },
     {
-      "id": "orchestrator",
-      "type": "messagebus",
-      "label": "任务编排与重试",
-      "sublabel": "固定离线流程已有 · Agent 待接入",
-      "tag": "固定离线流程已有",
-      "pos": [
-        730.0,
-        20
+      "kind": "region",
+      "label": "机器人线 · 运动、验证与执行的职责边界（目标）",
+      "wraps": [
+        "motion",
+        "compiler",
+        "validation",
+        "authorization",
+        "executor",
+        "evaluation"
       ],
-      "size": [
-        220,
-        76
-      ]
-    },
-    {
-      "id": "artifacts",
-      "type": "database",
-      "label": "任务与产物存储",
-      "sublabel": "本地 JSON 已有 · 任务存储待扩展",
-      "tag": "本地 JSON 已有",
-      "pos": [
-        1070.0,
-        20
-      ],
-      "size": [
-        220,
-        76
-      ]
+      "pad": 26
     }
   ],
   "connections": [
     {
-      "id": "image-input",
-      "from": "ingest",
-      "to": "vision",
-      "label": "图片"
+      "id": "file-routing",
+      "to": "interpret",
+      "label": "按格式解析",
+      "variant": "default",
+      "from": "inputs"
     },
     {
-      "id": "cad-input",
-      "from": "ingest",
-      "to": "cad",
-      "label": "CAD"
-    },
-    {
-      "id": "image-strokes",
-      "from": "vision",
+      "id": "normalize-review",
       "to": "strokes",
-      "label": "候选线条"
+      "label": "候选几何",
+      "variant": "default",
+      "from": "interpret"
     },
     {
-      "id": "cad-strokes",
-      "from": "cad",
-      "to": "strokes",
-      "label": "矢量曲线"
-    },
-    {
-      "id": "confirmed-strokes",
-      "from": "strokes",
+      "id": "draw-task",
       "to": "planar",
-      "label": "确认的笔画",
-      "variant": "emphasis"
-    },
-    {
-      "id": "plane-to-robot",
-      "from": "planar",
-      "to": "robotplan",
-      "label": "平面路径",
+      "label": "DrawingTask",
       "variant": "emphasis",
-      "labelDy": 150
+      "from": "strokes"
     },
     {
-      "id": "robot-to-sim",
-      "from": "robotplan",
-      "to": "simulation",
-      "label": "关节轨迹"
+      "id": "content-preview",
+      "to": "preview",
+      "label": "几何验收",
+      "variant": "emphasis",
+      "from": "planar"
     },
     {
-      "id": "sim-to-gate",
-      "from": "simulation",
-      "to": "release",
-      "label": "验证报告"
+      "id": "track-handoff",
+      "to": "motion",
+      "label": "Toolpath",
+      "variant": "emphasis",
+      "fromSide": "left",
+      "toSide": "right",
+      "from": "planar"
     },
     {
-      "id": "gate-to-device",
-      "from": "release",
+      "id": "shared-configuration",
+      "to": "motion",
+      "label": "共享配置",
+      "variant": "default",
+      "from": "configuration"
+    },
+    {
+      "id": "compile-program",
+      "to": "compiler",
+      "label": "MotionPlan",
+      "variant": "default",
+      "from": "motion"
+    },
+    {
+      "id": "validate-program",
+      "to": "validation",
+      "label": "ExecutionPlan",
+      "variant": "default",
+      "from": "compiler"
+    },
+    {
+      "id": "report-to-gate",
+      "to": "authorization",
+      "label": "同版报告",
+      "variant": "security",
+      "from": "validation"
+    },
+    {
+      "id": "authorized-program",
       "to": "executor",
-      "label": "授权轨迹",
-      "variant": "security"
+      "label": "批准的程序",
+      "variant": "security",
+      "from": "authorization"
     },
     {
-      "id": "device-to-result",
-      "from": "executor",
-      "to": "drawing",
-      "label": "线稿执行"
+      "id": "execution-result",
+      "to": "evaluation",
+      "label": "反馈与结果",
+      "variant": "default",
+      "from": "executor"
     },
     {
-      "id": "orchestrated-tools",
-      "from": "orchestrator",
-      "to": "strokes",
+      "id": "content-tool-control",
+      "to": "interpret",
       "label": "工具调度",
       "variant": "dashed",
-      "labelDy": 24
+      "from": "orchestration"
     },
     {
-      "id": "persist-artifacts",
-      "from": "planar",
-      "to": "artifacts",
-      "label": "版本化产物",
-      "variant": "dashed"
+      "id": "robot-tool-control",
+      "to": "compiler",
+      "label": "离线准备",
+      "variant": "dashed",
+      "from": "orchestration"
+    },
+    {
+      "id": "store-events",
+      "to": "storage",
+      "label": "任务与产物",
+      "variant": "dashed",
+      "from": "orchestration"
     }
   ],
   "cards": [
     {
       "dot": "cyan",
-      "title": "输入边界",
+      "title": "内容线 C1–C2",
       "items": [
-        "图片走识别；CAD 优先解析原生几何。",
-        "统一输出毫米笔画，人工可校正识别与尺度。"
+        "交付 DrawingTask / Toolpath，保持毫米与画板坐标。",
+        "共用样例：3 笔、55 点；弦偏差阈值 0.1 mm。"
       ]
     },
     {
       "dot": "emerald",
-      "title": "规划边界",
+      "title": "机器人线 R1–R3",
       "items": [
-        "平面 Toolpath 与可执行关节轨迹分开。",
-        "现有实现到几何预演；仿真与标定待接入。"
+        "共享模型 / 标定 / 能力，先验收一个后端。",
+        "未知控制语义仅做名义预演，不自动放行。"
       ]
     },
     {
       "dot": "rose",
-      "title": "执行边界",
+      "title": "离线汇合 J1 → 后续 H1",
       "items": [
-        "模型与编排只调用工具，不直接驱动电机。",
-        "硬件入口禁用；轨迹变更后重新验证与授权。"
+        "程序与验证绑定相同版本，准备过程不访问设备。",
+        "实机需预定测量阈值、完成适配并取得明确授权。"
       ]
     }
   ]

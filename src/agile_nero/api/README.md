@@ -21,6 +21,12 @@ DrawingTask JSON / CLI 参数 → JSON 报告与可选 SVG 文件。
 
 测试入口：[tests/offline/api](../../../tests/offline/api)。
 
+## 双线交付边界
+
+- 所属：两条线的外部入口。
+- 交付：文件或任务请求 → task_id / 状态 / 产物（拟定）。
+- 验收关口：J1，定义见 [双线契约](../../../docs/architecture/track-contracts.md)。
+
 ## 下一步
 
-先通过 ingestion 接入文件，再增加上传、任务查询和结果获取接口。
+保持现有离线 CLI；后续上传/查询接口调用稳定工作流，执行入口必须要求有效授权。

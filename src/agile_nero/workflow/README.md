@@ -20,6 +20,12 @@ run_task(DrawingTask) → WorkflowResult；run_tool(dict) → JSON 兼容字典�
 
 测试入口：[tests/offline/workflow](../../../tests/offline/workflow)。
 
+## 双线交付边界
+
+- 所属：两条线的公共编排。
+- 交付：任务 + 配置 + 工具结果 → 阶段状态与报告。
+- 验收关口：J1，定义见 [双线契约](../../../docs/architecture/track-contracts.md)。
+
 ## 下一步
 
-文件输入闭环后增加 task_id、持久化与受控重试，再包装 Codex SDK / LangGraph。
+先建立版本绑定和离线汇合，再加入 Agent；任务准备与授权执行分开，部分物理执行后不得自动重放。
