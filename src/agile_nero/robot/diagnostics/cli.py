@@ -1,4 +1,4 @@
-"""Environment and hardware diagnostics, with no motor-control commands."""
+"""NERO environment, state diagnostics, and explicit motor/feedback setup."""
 
 import argparse
 import importlib.metadata
@@ -192,16 +192,28 @@ def read_state(channel, bitrate, seconds, known_firmware=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
-    for command in ("doctor", "devices", "listen", "read-state"):
+    for command in ("doctor", "devices", "listen", "read-state", "enable-feedback"):
         p = sub.add_parser(command)
         p.add_argument("--output", type=Path)
-        if command in ("listen", "read-state"):
+        if command in ("listen", "read-state", "enable-feedback"):
             p.add_argument("--config", type=Path, default=Path("configs/robot.example.toml"))
             p.add_argument("--serial", help="USB adapter serial number")
             p.add_argument("--bitrate", type=int)
-            p.add_argument("--seconds", type=float, default=5)
-        if command == "read-state":
-            p.add_argument("--firmware", help="Actual firmware from web UI, e.g. 1.20")
+            p.add_argument(
+                "--seconds", type=float, default=30 if command == "enable-feedback" else 5
+            )
+        if command in ("read-state", "enable-feedback"):
+            p.add_argument(
+                "--firmware",
+                required=command == "enable-feedback",
+                help="Confirmed actual firmware, e.g. 1.11",
+            )
+        if command == "enable-feedback":
+            p.add_argument(
+                "--enable-motors",
+                action="store_true",
+                help="Explicitly enable motors and CAN feedback, without motion targets",
+            )
     args = parser.parse_args()
     try:
         if args.command == "doctor":
@@ -216,8 +228,14 @@ def main():
             bitrate = args.bitrate or config.get("bitrate", 1_000_000)
             if args.command == "listen":
                 result = listen(channel, bitrate, args.seconds)
-            else:
+            elif args.command == "read-state":
                 result = read_state(channel, bitrate, args.seconds, args.firmware)
+            else:
+                if not args.enable_motors:
+                    raise ValueError("Motor enabling requires explicit --enable-motors")
+                from agile_nero.robot.diagnostics.commission import enable_feedback
+
+                result = enable_feedback(channel, bitrate, args.seconds, args.firmware)
         result["checked_at"] = datetime.now(ZoneInfo("Asia/Shanghai")).isoformat()
     except Exception as exc:
         result = {"passed": False, "error": f"{type(exc).__name__}: {exc}"}

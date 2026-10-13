@@ -44,7 +44,7 @@ docs/               导航、路线图、架构和设备记录
 outputs/            运行产物，Git 忽略
 ```
 
-每个业务模块都有中文 README。[规划] 目录目前只有职责说明，目录存在并不代表功能已经实现。包根的 cli.py、state.py、transport.py 也只保留旧路径兼容，新代码写入对应模块。
+每个业务模块都有中文 README。[规划] 目录目前只有职责说明，目录存在并不代表功能已经实现。包根的 cli.py、state.py、transport.py、commission.py 也只保留旧路径兼容，新代码写入对应模块。
 
 ## 独立运行
 
@@ -57,10 +57,16 @@ PYTHONPATH=src python3.12 -S -m unittest discover -s tests/offline -t . -v
 
 --output-dir 必须是新目录，省略时只向终端输出 JSON。以上命令仅使用标准库；安装完整项目后可运行 nero-dry-run。
 
+## 设备诊断
+
+诊断代码集中于 [robot/diagnostics](src/agile_nero/robot/diagnostics/README.md)。默认状态诊断只放行固件查询；迁移后的反馈配置工具需要显式 enable-feedback / --enable-motors 参数，会改变电机使能与 CAN 推送状态，运动目标仍被拦截。它与当前禁用的绘画执行器分别管理。
+
+[CAN 重连记录](docs/can-reconnect-2026-10-12.md) · [反馈配置记录](docs/enable-feedback-2026-10-12.md) · [网络接入](docs/network.md) · [历史小幅移动记录](docs/motion-test-2026-10-13.md)
+
 ## 下一步
 
 内容线推进二维向量输入 → DrawingTask → 几何预览；机器人线从同一[两直线一圆弧样例](examples/acceptance/README.md)开始，建立模型/标定/能力，再离线准备并验证一个后端的程序。具体输入输出和 C1–H1 验收条件见 [双线契约](docs/architecture/track-contracts.md)。
 
-开始下一次任务时，先确认 git status --short --branch。PR #1 已合并；本轮架构更新另用 codex/two-track-backend-architecture 分支。主目录的未提交硬件调试内容在同步前仍需独立核对，见 [迁移说明](docs/modules.md#分支与迁移)。
+开始下一次任务时，先确认 git status --short --branch。PR #1、#2 已合并；原主目录的诊断改动已迁入对应模块，见 [迁移说明](docs/modules.md#分支与迁移)与[迁移验证记录](docs/diagnostics-migration-2026-10-13.md)。
 
 项目尚未选定许可证，第三方依赖和输入资料按各自许可使用。

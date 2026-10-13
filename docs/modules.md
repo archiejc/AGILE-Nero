@@ -56,11 +56,11 @@ contracts 定义共享数据，业务模块依赖它。planning 负责路径计�
 
 ## 分支与迁移
 
-PR #1 已合并远端 main。本轮双线设计在 codex/two-track-backend-architecture 分支，从已合并版本继续。
+2026-10-13：PR #1、#2 已合并，主目录已更新到模块化结构，原未提交诊断代码迁入 robot/diagnostics，测试迁入 tests/robot。迁移在 codex/migrate-hardware-diagnostics 分支单独提交，具体证据见 [迁移记录](diagnostics-migration-2026-10-13.md)。
 
-- PR 工作树：/Users/jiachenboo/.codex/worktrees/offline-drawing-pipeline/AGILE-Nero。
-- 日常主目录：/Users/jiachenboo/Research/AGILE-Nero，目前仍有 main 上未提交的硬件调试改动。
-- 同步本地主目录前，按下表逐项核对其未提交改动；它们没有被收进本轮架构提交。
+- 日常开发目录：/Users/jiachenboo/Research/AGILE-Nero。以当前 git status 显示的分支为准。
+- 架构工作树保留历史生成证据；继续开发可直接使用日常主目录中的对应模块。
+- 原始未提交文件与 Git stash 在本机保留；configs/local 和 .venv 未重建。新改动继续通过独立分支与 PR 交付。
 
 | 原位置 | 当前实现位置 |
 | --- | --- |
@@ -72,7 +72,9 @@ PR #1 已合并远端 main。本轮双线设计在 codex/two-track-backend-archi
 | drawing/workflow.py | workflow/offline.py |
 | drawing/cli.py | api/cli.py |
 | cli.py、state.py、transport.py | robot/diagnostics 下同名文件 |
+| commission.py | robot/diagnostics/commission.py |
 | tests/test_drawing.py 中的测试 | tests/offline 下按模块分组 |
 | tests/test_state.py、test_transport.py | tests/robot 下同名文件 |
+| tests/test_commission.py | tests/robot/test_commission.py |
 
-旧 Python 导入和 python -m agile_nero.drawing 保留兼容。tests/test_drawing.py 只转发旧 unittest 发现命令，CI 继续通过该入口运行完整离线测试。兼容文件只做转发，新功能写到当前实现位置。
+旧 Python 导入（含 agile_nero.commission）和 python -m agile_nero.drawing 保留兼容。tests/test_drawing.py 只转发旧 unittest 发现命令，CI 继续通过该入口运行完整离线测试。兼容文件只做转发，新功能写到当前实现位置。

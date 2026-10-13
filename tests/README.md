@@ -2,6 +2,7 @@
 
 - offline/：只用标准库，内部按 contracts、planning、artifacts、workflow、robot、api 分组。
 - robot/：需要项目 SDK 环境，使用模拟传输或离线反馈帧，不连接设备。
+- robot/conftest.py：真实 USB、CAN 或网络访问直接使测试失败；不允许为运行实机而关闭这个保护。
 - test_drawing.py：仅兼容旧 unittest 发现命令，实际测试全部转发到 offline/。
 
 从仓库根目录运行：
